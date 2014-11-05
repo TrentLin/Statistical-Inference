@@ -1,0 +1,92 @@
+Statistical Inference Project Part2 Simulation Exercise
+========================================================
+Created By Trent Lin Oct. 26 2014
+
+In Second portion of this project, we're going to analyze the ToothGrowth
+data in the R datasets package
+
+## Basic setting
+```{r}
+library(ggplot2)
+echo = TRUE
+```
+
+## 1.Load the ToothGrowth data and perform some basic exploratory data   analysis
+
+```{r}
+# load the dataset ToothGrowth
+library(datasets)
+data(ToothGrowth)
+```
+
+```{r}
+# Look at the dataset variables
+head(ToothGrowth)
+tail(ToothGrowth)
+str(ToothGrowth)
+```
+
+```{r}
+# converse dose from num to factor
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+```
+
+```{r}
+# review the dataset variables
+str(ToothGrowth)
+```
+
+## 2.Provide a basic summary of the data.
+
+```{r}
+# summary statistics for all variables
+summary(ToothGrowth)
+```
+
+```{r}
+# split of cases between different dose levels and delivery methods
+table(ToothGrowth$supp, ToothGrowth$dose)
+```
+
+```{r}
+g <- ggplot(data = ToothGrowth, aes(x = dose, y= len))
+g + geom_boxplot(aes(colour = factor(dose))) +
+  facet_grid(.~supp) +
+  labs(title="Delivery Methods",x = "Vaitamin C in milligrams", y ="Tooth Length")
+```
+
+## 3.Use confidence intervals and hypothesis tests to compare tooth growth by supp and dose.
+
+The tooth growth was compared by Delivery Methods(supplement) for each Vaitamin dosage under the null hypothesis that each Delivery Method(supplement) has the same effect at a certain Vaitamin C dosage on the tooth length.
+
+```{r}
+#Split the dataset upby Vaitamin C dosage
+d0.5 <- subset(ToothGrowth, dose == 0.5)
+d1.0 <- subset(ToothGrowth, dose == 1.0)
+d2.0 <- subset(ToothGrowth, dose == 2.0)
+```
+
+```{r}
+#Conduct a t-test between Delivery Methods(Supplements)
+tes0.5 <-t.test(len ~ supp, paired=FALSE, var.equal= FALSE, data=d0.5)
+tes1.0 <-t.test(len ~ supp, paired=FALSE, var.equal= FALSE, data=d1.0)
+tes2.0 <-t.test(len ~ supp, paired=FALSE, var.equal= FALSE, data=d2.0)
+```
+
+```{r}
+#P-Value of each Vaitamin C dosage
+tes0.5$p.value
+tes1.0$p.value
+tes2.0$p.value
+```
+
+```{r}
+#95 percent confidence interval of each Vaitamin C dosage
+tes0.5$conf
+tes1.0$conf
+tes2.0$conf
+```
+
+## 4. Conclusion
+By t-test we found that the P-value for Vaitamin C dosage 0.5 and 1 are very small which are 0.00635 and 0.001. We have significant evidence to reject our Hypothesis H0 which different Delivery Methods(Supplement) has the same effect at a certain Vaitamin C dosage on the tooth length. It means that in Vaitamin C dosage 0.5 and 1, Delivery Methods(Supplement) significant effect the Tooth Growth in Guinea Pigs.
+However the P-Value for Vaitamin C dosage 2 is 0.96385, we don't have significant evidence to reject Our Hypothesis H0. It means that in Vaitamin C dosage 2, Delivery Method(Supplement) doesn't siginficant effect the Toothe Growth in Guinea Prigs.
